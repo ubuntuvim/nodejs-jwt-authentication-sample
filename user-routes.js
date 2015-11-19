@@ -8,8 +8,8 @@ var app = module.exports = express.Router();
 // XXX: This should be a database of users :).
 var users = [{
   id: 1,
-  username: 'gonto',
-  password: 'gonto'
+  username: 'ember',
+  password: '123'
 }];
 
 function createToken(user) {
@@ -17,7 +17,7 @@ function createToken(user) {
 }
 
 function getUserScheme(req) {
-  
+
   var username;
   var type;
   var userSearch = {};
@@ -43,15 +43,15 @@ function getUserScheme(req) {
 }
 
 app.post('/users', function(req, res) {
-  
-  var userScheme = getUserScheme(req);  
+
+  var userScheme = getUserScheme(req);
 
   if (!userScheme.username || !req.body.password) {
-    return res.status(400).send("You must send the username and the password");
+    return res.status(400).send("用户名和密码必填！");
   }
 
   if (_.find(users, userScheme.userSearch)) {
-   return res.status(400).send("A user with that username already exists");
+   return res.status(400).send("此用户已经存在！");
   }
 
   var profile = _.pick(req.body, userScheme.type, 'password', 'extra');
@@ -69,17 +69,17 @@ app.post('/sessions/create', function(req, res) {
   var userScheme = getUserScheme(req);
 
   if (!userScheme.username || !req.body.password) {
-    return res.status(400).send("You must send the username and the password");
+    return res.status(400).send("用户名和密码必填！");
   }
 
   var user = _.find(users, userScheme.userSearch);
-  
+
   if (!user) {
-    return res.status(401).send({message:"The username or password don't match", user: user});
+    return res.status(401).send({message:"用户名和密码不匹配，请重试！", user: user});
   }
 
   if (user.password !== req.body.password) {
-    return res.status(401).send("The username or password don't match");
+    return res.status(401).send("用户名和密码不匹配，请重试！");
   }
 
   res.status(201).send({
